@@ -11,7 +11,7 @@ services:
     depends_on:
       - web
   web:
-    build: .
+    build: . #현재 디렉토리인 blue 내의 도커 파일 사용
     command: gunicorn project1.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - static_volume:/usr/src/app/_static

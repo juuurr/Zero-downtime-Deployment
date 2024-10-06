@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3'
 
 services:
   nginx:
@@ -16,6 +16,7 @@ services:
     volumes:
       - static_volume:/usr/src/app/_static
       - media_volume:/usr/src/app/_media
+      - ./:/usr/src/app/
     expose:
       - 8000
     env_file:

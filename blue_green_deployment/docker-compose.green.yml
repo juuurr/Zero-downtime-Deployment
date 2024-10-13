@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  green-nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    volumes:
+      - static_volume:/usr/src/app/_static
+      - media_volume:/usr/src/app/_media
+    ports:
+      - 81:80
+    depends_on:
+      - green
+
+  green:
+    build: .
+    command: gunicorn project1.wsgi:application --bind 0.0.0.0:8001
+    volumes:
+      - static_volume:/usr/src/app/_static
+      - media_volume:/usr/src/app/_media
+      - ./:/usr/src/app/
+    ports:
+      - 8001:8001
+    expose:
+      - 8001
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - green-db
+    container_name: green
+  
+  green-db:
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data1:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=django_dev
+      - POSTGRES_USER=django_db_user
+      - POSTGRES_PASSWORD=django_db_password
+    ports:
+      - "5433:5432"
+
+volumes:
+  postgres_data1:
+  static_volume:
+  media_volume:

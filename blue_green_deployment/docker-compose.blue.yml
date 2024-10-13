@@ -1,0 +1,47 @@
+version: '3'
+services:
+  blue-nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    volumes:
+      - static_volume:/usr/src/app/_static
+      - media_volume:/usr/src/app/_media
+    ports:
+      - 80:80
+    depends_on:
+      - blue
+
+  blue:
+    build: .
+    command: gunicorn project1.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/usr/src/app/_static
+      - media_volume:/usr/src/app/_media
+      - ./:/usr/src/app/
+    ports:
+      - 8000:8000
+    expose:
+      - 8000
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - blue-db
+    container_name: blue
+  
+
+  blue-db:
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data_blue:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=django_dev
+      - POSTGRES_USER=django_db_user
+      - POSTGRES_PASSWORD=django_db_password
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data_blue:
+  static_volume:
+  media_volume:

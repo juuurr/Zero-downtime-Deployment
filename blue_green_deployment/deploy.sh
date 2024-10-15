@@ -8,18 +8,17 @@ BLUE_COMPOSE_FILE="docker-compose.blue.yml"
 GREEN_COMPOSE_FILE="docker-compose.green.yml"
 CURRENT_ENV=$(cat $CURRENT_ENV_FILE)
 
+
 # 현재 실행 중인 환경 확인
 function check_if_running() {
-    if docker ps -q -f name=blue | grep -q .; then
+    if docker ps -q -f "name=blue$" | grep -q .; then
         CURRENT_ENV="blue"
-    elif docker ps -q -f name=green | grep -q .; then
+    elif docker ps -q -f "name=green$" | grep -q .; then
         CURRENT_ENV="green"
     else
         CURRENT_ENV="없음"
     fi
 }
-
-
 
 
 # 현재 환경 상태를 파일로 저장
@@ -48,7 +47,6 @@ function start_blue() {
     if [ $? -eq 0 ]; then
         echo "Blue 환경이 실행되었습니다."
         echo "blue" > $CURRENT_ENV_FILE
-        echo "Blue environment is now live!"
     else
         echo "Blue 환경 실행에 실패하였습니다."
         exit 1
@@ -62,7 +60,6 @@ function start_green() {
     if [ $? -eq 0 ]; then
         echo "Green 환경이 실행되었습니다."
         echo "green" > $CURRENT_ENV_FILE
-        echo "Green environment is now live!"
     else
         echo "Green 환경 실행에 실패하였습니다."
         exit 1
@@ -74,13 +71,13 @@ function start_green() {
 # Blue 환경 중지
 function stop_blue() {
     echo "Blue 환경을 중지합니다."
-    docker-compose -f $BLUE_COMPOSE_FILE stop
+    docker-compose -f $BLUE_COMPOSE_FILE down
 }
 
 # Green 환경 중지
 function stop_green() {
     echo "Green 환경을 중지합니다."
-    docker-compose -f $GREEN_COMPOSE_FILE stop
+    docker-compose -f $GREEN_COMPOSE_FILE down
 }
 
 # 환경 전환
